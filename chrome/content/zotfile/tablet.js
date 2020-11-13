@@ -91,7 +91,7 @@ Zotero.ZotFile.Tablet = new function() {
             // get attachment from tablet
             att = yield this.Tablet.getAttachmentFromTablet(att, false);
             // update progress window
-            progress.complete(att.attachmentFilename, att.getImageSrc());
+            progress.complete(OS.Path.basename(att.attachmentFilename), att.getImageSrc());
         }
         // show messages and handle errors
         if(description) progressWin.addDescription(this.ZFgetString('general.warning.skippedAtt.msg'));
@@ -324,7 +324,7 @@ Zotero.ZotFile.Tablet = new function() {
                 });
                 yield att.saveTx();
                 // update progress window
-                progress.complete(att.attachmentFilename, att.getImageSrc());
+                progress.complete(OS.Path.basename(att.attachmentFilename), att.getImageSrc());
             }
             catch(e) {
                 progress.setError();
@@ -417,8 +417,8 @@ Zotero.ZotFile.Tablet = new function() {
         if (tablet_mode == 1) {
             // change name of attachment file
             if (tablet_rename)  {
-                var filename = this.getFilename(item, att.attachmentFilename);
-                if(filename != att.attachmentFilename) {
+                var filename = this.getFilename(item, OS.Path.basename(att.attachmentFilename));
+                if(filename != OS.Path.basename(att.attachmentFilename)) {
                     yield att.renameAttachmentFile(filename);
                     att.setField('title', filename);
                     yield att.saveTx();
@@ -427,15 +427,15 @@ Zotero.ZotFile.Tablet = new function() {
             }
             // create copy of file on tablet and catch errors
             var folder = this.getLocation(tablet_dest, item, tablet_subfolder);
-            if (!tablet_status) path = yield this.copyFile(path, folder, att.attachmentFilename);
+            if (!tablet_status) path = yield this.copyFile(path, folder, OS.Path.basename(att.attachmentFilename));
             if (tablet_status) {
                 var path_tablet = yield this.Tablet.getTabletFilePath(att);
                 if(path_tablet) {
-                    path = yield this.moveFile(path_tablet, folder, att.attachmentFilename);
+                    path = yield this.moveFile(path_tablet, folder, OS.Path.basename(att.attachmentFilename));
                 }
                 else {
                     this.infoWindow('ZotFile Warning', 'File on tablet not found. Zotfile is creating a new copy on tablet.');
-                    path = yield this.copyFile(path, folder, att.attachmentFilename);
+                    path = yield this.copyFile(path, folder, OS.Path.basename(att.attachmentFilename));
                 }
             }
         }
@@ -513,7 +513,7 @@ Zotero.ZotFile.Tablet = new function() {
             // send to tablet
             att = yield this.Tablet.sendAttachmentToTablet(att, project_folder, false);
             // update progress window
-            progress.complete(att.attachmentFilename, att.getImageSrc());
+            progress.complete(OS.Path.basename(att.attachmentFilename), att.getImageSrc());
         }
         // show messages and handle errors
         if(description) progressWin.addDescription(this.ZFgetString('general.warning.skippedAtt.msg'));
@@ -541,7 +541,7 @@ Zotero.ZotFile.Tablet = new function() {
                 continue;
             }
             if (!(yield this.Tablet.getTabletStatusModified(att))) {
-                progress.complete(att.attachmentFilename, att.getImageSrc());
+                progress.complete(OS.Path.basename(att.attachmentFilename), att.getImageSrc());
                 continue;
             }
             // update status (foreground mode)
@@ -564,7 +564,7 @@ Zotero.ZotFile.Tablet = new function() {
             if (this.getPref('tablet.updateExtractAnnotations'))
                 this.pdfAnnotations.getAnnotations([att.id]);
             // update progress window
-            progress.complete(att.attachmentFilename, att.getImageSrc());
+            progress.complete(OS.Path.basename(att.attachmentFilename), att.getImageSrc());
         }
         // show messages and handle errors
         if(description) progressWin.addDescription(this.ZFgetString('general.warning.skippedAtt.msg'));
@@ -619,7 +619,7 @@ Zotero.ZotFile.Tablet = new function() {
             yield att.saveTx();
             yield item.saveTx();
             if (!fake_remove)
-                this.infoWindow('ZotFile Warning', 'The tablet file "' + att.attachmentFilename + '" was manually moved and does not exist.');
+                this.infoWindow('ZotFile Warning', 'The tablet file "' + OS.Path.basename(att.attachmentFilename) + '" was manually moved and does not exist.');
             return att;
         }
         var tablet_folder = OS.Path.dirname(path_tablet);
@@ -638,7 +638,7 @@ Zotero.ZotFile.Tablet = new function() {
             if (!this.getPref('tablet.storeCopyOfFile')) {
                 // prompt if both file have been modified
                 if (tablet_status == 1) {
-                    tablet_status = this.promptUser(this.ZFgetString('tablet.fileConflict', [att.attachmentFilename]),
+                    tablet_status = this.promptUser(this.ZFgetString('tablet.fileConflict', [OS.Path.basename(att.attachmentFilename)]),
                         this.ZFgetString('tablet.fileConflict.replaceZ'),
                         this.ZFgetString('general.cancel'),
                         this.ZFgetString('tablet.fileConflict.removeT'));
@@ -725,7 +725,7 @@ Zotero.ZotFile.Tablet = new function() {
             if (this.getPref('tablet.tagParentPull'))
                 item.addTag(this.getPref('tablet.tagParentPull_tag'));
             // notification (display a different message when the attachments have been deleted from tablet without being sent back to Zotero)
-            var message = "'" + att.attachmentFilename + "' " + (att_deleted ? this.ZFgetString('tablet.attsDel') : '');
+            var message = "'" + OS.Path.basename(att.attachmentFilename) + "' " + (att_deleted ? this.ZFgetString('tablet.attsDel') : '');
             this.messages_report.push(message);
         }
         // remove modified tag from attachment

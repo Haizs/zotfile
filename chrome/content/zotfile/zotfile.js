@@ -888,7 +888,7 @@ Zotero.ZotFile = new function() {
         if(!att.isImportedAttachment() && !linkmode == Zotero.Attachments.LINK_MODE_LINKED_FILE)
             return att;
         // get filename and location
-        var filename = rename ? this.getFilename(item, att.attachmentFilename) : att.attachmentFilename,
+        var filename = rename ? this.getFilename(item, OS.Path.basename(att.attachmentFilename)) : OS.Path.basename(att.attachmentFilename),
             location = this.getLocation(folder, item, subfolder);
         // (a) linked to imported attachment
         if (imported && linkmode == Zotero.Attachments.LINK_MODE_LINKED_FILE) {

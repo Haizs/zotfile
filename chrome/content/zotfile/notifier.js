@@ -57,7 +57,7 @@ Zotero.ZotFile.notifierCallback = new function() {
                 continue;
             }
             // skip if file already has correct filename
-            var filename = att.attachmentFilename.replace(/\.[^/.]+$/, '');
+            var filename = OS.Path.basename(att.attachmentFilename).replace(/\.[^/.]+$/, '');
             if(filename.indexOf(this.getFilename(item, filename)) === 0) continue;
             // exclude current key for next event
             this.excludeAutorenameKeys.push(att.key);
